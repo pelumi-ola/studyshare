@@ -4,9 +4,9 @@ import {
   getCourseById,
   updateCourse,
   deleteCourse,
-} from "../controllers/courseController";
-import { protect } from "../middleware/authMiddleware";
-import { isAdmin } from "../middleware/adminMiddleware";
+} from "../controllers/courseController.js";
+import { protect } from "../middleware/authMiddleware.js";
+import { isAdmin } from "../middleware/adminMiddleware.js";
 
 import { Router } from "express";
 const router = Router();

@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { create, find, findById } from "../models/Report";
+import { create, find, findById } from "../models/Report.js";
 
 export async function createReport(req, res) {
   try {

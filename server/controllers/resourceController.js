@@ -4,9 +4,9 @@ import {
   countDocuments,
   findById,
   findByIdAndUpdate,
-} from "../models/Resource";
-import { findById as _findById } from "../models/Course";
-import { uploader, utils } from "../config/cloudinary";
+} from "../models/Resource.js";
+import { findById as _findById } from "../models/Course.js";
+import { uploader, utils } from "../config/cloudinary.js";
 import { unlinkSync, existsSync } from "fs";
 
 export async function createResource(req, res) {

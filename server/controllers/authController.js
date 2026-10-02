@@ -1,6 +1,6 @@
-import userModel, { findOne, findById } from "../models/User";
+import userModel, { findOne, findById } from "../models/User.js";
 import { hash, compare } from "bcryptjs";
-import generateToken from "../utils/generateToken";
+import generateToken from "../utils/generateToken.js";
 
 export async function registerUser(req, res) {
   try {

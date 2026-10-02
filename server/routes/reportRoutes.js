@@ -4,9 +4,9 @@ import {
   getReportById,
   updateReport,
   deleteReport,
-} from "../controllers/reportController";
-import { protect } from "../middleware/authMiddleware";
-import { isAdmin } from "../middleware/adminMiddleware";
+} from "../controllers/reportController.js";
+import { protect } from "../middleware/authMiddleware.js";
+import { isAdmin } from "../middleware/adminMiddleware.js";
 
 import { Router } from "express";
 const router = Router();

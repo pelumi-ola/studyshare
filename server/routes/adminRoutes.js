@@ -1,11 +1,11 @@
-import { isAdmin } from "../middleware/adminMiddleware";
+import { isAdmin } from "../middleware/adminMiddleware.js";
 import {
   registerAdmin,
   loginAdmin,
   getAllUsers,
   deleteUser,
-} from "../controllers/adminController";
-import { protect } from "../middleware/authMiddleware";
+} from "../controllers/adminController.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 import { Router } from "express";
 const router = Router();

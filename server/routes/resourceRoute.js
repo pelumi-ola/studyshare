@@ -7,9 +7,9 @@ import {
   updateResource,
   deleteResource,
   downloadResource,
-} from "../controllers/resourceController";
-import { protect } from "../middleware/authMiddleware";
-import { single } from "../middleware/uploadMiddleware";
+} from "../controllers/resourceController.js";
+import { protect } from "../middleware/authMiddleware.js";
+import { single } from "../middleware/uploadMiddleware.js";
 
 router.post("/", protect, single("file"), createResource);
 router.get("/", protect, getAllResources);

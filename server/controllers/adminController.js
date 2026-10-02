@@ -3,9 +3,9 @@ import usermodel, {
   find,
   findById,
   findByIdAndDelete,
-} from "../models/User";
+} from "../models/User.js";
 import { hash, compare } from "bcryptjs";
-import generateToken from "../utils/generateToken";
+import generateToken from "../utils/generateToken.js";
 
 export async function registerAdmin(req, res) {
   try {

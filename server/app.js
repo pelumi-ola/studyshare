@@ -2,12 +2,12 @@ import express, { json, urlencoded } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
-import authRoutes from "./routes/authRoutes";
-import resourceRoutes from "./routes/resourceRoute";
-import courseRoutes from "./routes/courseRoutes";
-import adminRoutes from "./routes/adminRoutes";
-import reportRoutes from "./routes/reportRoutes";
-import errorHandler from "./middleware/errorMiddleware";
+import authRoutes from "./routes/authRoutes.js";
+import resourceRoutes from "./routes/resourceRoute.js";
+import courseRoutes from "./routes/courseRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
+import errorHandler from "./middleware/errorMiddleware.js";
 
 const app = express();
 

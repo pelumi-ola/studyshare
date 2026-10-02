@@ -1,4 +1,4 @@
-import { findById } from "../models/User";
+import { findById } from "../models/User.js";
 
 const isAdmin = async (req, res, next) => {
   try {

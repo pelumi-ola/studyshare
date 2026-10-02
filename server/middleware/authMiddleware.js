@@ -1,6 +1,6 @@
 import { verify } from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
-import { findById } from "../models/User";
+import { findById } from "../models/User.js";
 
 // Middleware to protect routes
 const protect = asyncHandler(async (req, res, next) => {

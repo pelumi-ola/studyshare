@@ -4,7 +4,7 @@ import {
   find,
   findById,
   findByIdAndUpdate,
-} from "../models/Course";
+} from "../models/Course.js";
 
 export async function createCourse(req, res) {
   try {
