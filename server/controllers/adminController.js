@@ -1,8 +1,13 @@
-const usermodel = require("../models/User");
-const bcrypt = require("bcryptjs");
-const generateToken = require("../utils/generateToken");
+import usermodel, {
+  findOne,
+  find,
+  findById,
+  findByIdAndDelete,
+} from "../models/User";
+import { hash, compare } from "bcryptjs";
+import generateToken from "../utils/generateToken";
 
-exports.registerAdmin = async (req, res) => {
+export async function registerAdmin(req, res) {
   try {
     const { name, email, password } = req.body;
 
@@ -11,11 +16,11 @@ exports.registerAdmin = async (req, res) => {
         .status(400)
         .json({ message: "Please fill in all required fields" });
     }
-    const existingUser = await usermodel.findOne({ email });
+    const existingUser = await findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hash(password, 10);
 
     const admin = new usermodel({
       name,
@@ -40,16 +45,16 @@ exports.registerAdmin = async (req, res) => {
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }
-};
+}
 
-exports.loginAdmin = async (req, res) => {
+export async function loginAdmin(req, res) {
   try {
     const { email, password } = req.body;
-    const admin = await usermodel.findOne({ email, role: "admin" });
+    const admin = await findOne({ email, role: "admin" });
     if (!admin) {
       return res.status(404).json({ message: "Admin not found" });
     }
-    const isMatch = await bcrypt.compare(password, admin.password);
+    const isMatch = await compare(password, admin.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -61,11 +66,11 @@ exports.loginAdmin = async (req, res) => {
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }
-};
+}
 
-exports.getAllUsers = async (req, res) => {
+export async function getAllUsers(req, res) {
   try {
-    const users = await usermodel.find().select("-password");
+    const users = await find().select("-password");
     if (!users) {
       return res.status(404).json({ message: "No users found" });
     }
@@ -79,15 +84,15 @@ exports.getAllUsers = async (req, res) => {
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }
-};
+}
 
-exports.deleteUser = async (req, res) => {
+export async function deleteUser(req, res) {
   try {
-    const user = await usermodel.findById(req.params.id);
+    const user = await findById(req.params.id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    await usermodel.findByIdAndDelete(req.params.id);
+    await findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     console.error("DELETEUSER ERROR:", error);
@@ -95,4 +100,4 @@ exports.deleteUser = async (req, res) => {
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }
-};
+}

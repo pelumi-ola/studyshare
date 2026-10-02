@@ -137,6 +137,7 @@ export function Modal({ open, onClose, title, children }) {
 }
 
 const ToastCtx = createContext(() => {});
+// eslint-disable-next-line react-refresh/only-export-components
 export const useToast = () => useContext(ToastCtx);
 export function ToastProvider({ children }) {
   const [items, setItems] = useState([]);

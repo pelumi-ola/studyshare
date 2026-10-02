@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+import { Schema, model } from "mongoose";
 
-const resourceSchema = new mongoose.Schema(
+const resourceSchema = new Schema(
   {
     title: {
       type: String,
@@ -15,7 +15,7 @@ const resourceSchema = new mongoose.Schema(
     },
 
     course: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Course",
       required: true,
     },
@@ -53,7 +53,7 @@ const resourceSchema = new mongoose.Schema(
     },
 
     uploadedBy: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -80,4 +80,4 @@ resourceSchema.index({
   fileName: "text",
 });
 
-module.exports = mongoose.model("Resource", resourceSchema);
+export default model("Resource", resourceSchema);

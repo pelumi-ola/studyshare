@@ -1,21 +1,18 @@
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
+import multer, { diskStorage } from "multer";
+import { join, extname } from "path";
+import { mkdirSync } from "fs";
 
-const uploadDir = path.join(__dirname, "..", "uploads");
-fs.mkdirSync(uploadDir, { recursive: true });
+const uploadDir = join(__dirname, "..", "uploads");
+mkdirSync(uploadDir, { recursive: true });
 
 // Set up storage engine for multer
-const storage = multer.diskStorage({
+const storage = diskStorage({
   destination: function (req, file, cb) {
     cb(null, uploadDir); // Specify the destination folder for uploaded files
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(
-      null,
-      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname),
-    ); // Generate a unique filename
+    cb(null, file.fieldname + "-" + uniqueSuffix + extname(file.originalname)); // Generate a unique filename
   },
 });
 
@@ -40,7 +37,7 @@ const ALLOWED = {
 };
 
 const fileFilter = (req, file, cb) => {
-  const ext = path.extname(file.originalname).toLowerCase();
+  const ext = extname(file.originalname).toLowerCase();
   const exts = ALLOWED[file.mimetype];
   if (exts && exts.includes(ext)) return cb(null, true);
   cb(new Error("Unsupported file type"), false);
@@ -55,4 +52,4 @@ const upload = multer({
   },
 });
 
-module.exports = upload;
+export default upload;

@@ -1,9 +1,15 @@
-const resourcemodel = require("../models/Resource");
-const courseModel = require("../models/Course");
-const cloudinary = require("../config/cloudinary");
-const fs = require("fs");
+import {
+  create,
+  find,
+  countDocuments,
+  findById,
+  findByIdAndUpdate,
+} from "../models/Resource";
+import { findById as _findById } from "../models/Course";
+import { uploader, utils } from "../config/cloudinary";
+import { unlinkSync, existsSync } from "fs";
 
-exports.createResource = async (req, res) => {
+export async function createResource(req, res) {
   try {
     const {
       title,
@@ -30,7 +36,7 @@ exports.createResource = async (req, res) => {
       });
     }
 
-    const existingCourse = await courseModel.findById(course);
+    const existingCourse = await _findById(course);
 
     if (!existingCourse) {
       return res.status(404).json({
@@ -46,13 +52,13 @@ exports.createResource = async (req, res) => {
     }
 
     // Upload file to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
+    const result = await uploader.upload(req.file.path, {
       folder: "studyshare/resources",
       resource_type: "raw",
     });
 
     // Create resource in MongoDB
-    const resource = await resourcemodel.create({
+    const resource = await create({
       title,
       description,
       course,
@@ -70,7 +76,7 @@ exports.createResource = async (req, res) => {
     });
 
     // Delete temporary local file
-    fs.unlinkSync(req.file.path);
+    unlinkSync(req.file.path);
 
     res
       .status(201)
@@ -79,16 +85,16 @@ exports.createResource = async (req, res) => {
     console.error("UPLOAD ERROR:", error);
 
     // Remove temporary file if Cloudinary/MongoDB fails
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
+    if (req.file && existsSync(req.file.path)) {
+      unlinkSync(req.file.path);
     }
     res
       .status(500)
       .json({ message: "Error uploading resource", error: error.message });
   }
-};
+}
 
-exports.getAllResources = async (req, res) => {
+export async function getAllResources(req, res) {
   try {
     const { search, resourceType, courseId, page = 1, limit = 10 } = req.query;
 
@@ -108,7 +114,7 @@ exports.getAllResources = async (req, res) => {
 
     // Filter by course
     if (courseId) {
-      const course = await courseModel.findById(courseId);
+      const course = await _findById(courseId);
 
       if (!course) {
         return res.status(404).json({
@@ -124,14 +130,13 @@ exports.getAllResources = async (req, res) => {
     const limitNumber = Math.min(Math.max(Number(limit), 1), 50);
     const skip = (pageNumber - 1) * limitNumber;
 
-    const resources = await resourcemodel
-      .find(filter)
+    const resources = await find(filter)
       .populate("course")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limitNumber);
 
-    const totalResources = await resourcemodel.countDocuments(filter);
+    const totalResources = await countDocuments(filter);
 
     const totalPages = Math.ceil(totalResources / limitNumber);
 
@@ -155,13 +160,11 @@ exports.getAllResources = async (req, res) => {
       error: error.message,
     });
   }
-};
+}
 
-exports.getResourceById = async (req, res) => {
+export async function getResourceById(req, res) {
   try {
-    const resource = await resourcemodel
-      .findById(req.params.id)
-      .populate("course");
+    const resource = await findById(req.params.id).populate("course");
     if (!resource) {
       return res.status(404).json({ message: "Resource not found" });
     }
@@ -176,13 +179,11 @@ exports.getResourceById = async (req, res) => {
       error: error.message,
     });
   }
-};
+}
 
-exports.deleteResource = async (req, res) => {
+export async function deleteResource(req, res) {
   try {
-    const resource = await resourcemodel
-      .findById(req.params.id)
-      .populate("course");
+    const resource = await findById(req.params.id).populate("course");
     if (!resource) {
       return res.status(404).json({ message: "Resource not found" });
     }
@@ -192,7 +193,7 @@ exports.deleteResource = async (req, res) => {
         .status(403)
         .json({ message: "You are not allowed to delete this resource" });
     }
-    await cloudinary.uploader.destroy(resource.publicId, {
+    await uploader.destroy(resource.publicId, {
       resource_type: "raw",
     });
 
@@ -207,11 +208,11 @@ exports.deleteResource = async (req, res) => {
       error: error.message,
     });
   }
-};
+}
 
-exports.updateResource = async (req, res) => {
+export async function updateResource(req, res) {
   try {
-    const resource = await resourcemodel.findById(req.params.id);
+    const resource = await findById(req.params.id);
     if (!resource) {
       return res.status(404).json({ message: "Resource not found" });
     }
@@ -222,7 +223,7 @@ exports.updateResource = async (req, res) => {
     }
     const { title, description, course, resourceType } = req.body;
     if (course) {
-      const existingCourse = await courseModel.findById(course);
+      const existingCourse = await _findById(course);
 
       if (!existingCourse) {
         return res.status(404).json({
@@ -249,18 +250,16 @@ exports.updateResource = async (req, res) => {
       error: error.message,
     });
   }
-};
+}
 
-exports.getResourcesByCourse = async (req, res) => {
+export async function getResourcesByCourse(req, res) {
   try {
     const { courseId } = req.params;
-    const course = await courseModel.findById(courseId);
+    const course = await _findById(courseId);
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
-    const resources = await resourcemodel
-      .find({ course: courseId })
-      .populate("course");
+    const resources = await find({ course: courseId }).populate("course");
     res
       .status(200)
       .json({ message: "Resources retrieved successfully", resources });
@@ -271,13 +270,13 @@ exports.getResourcesByCourse = async (req, res) => {
       error: error.message,
     });
   }
-};
+}
 
-exports.getResourcesByUser = async (req, res) => {
+export async function getResourcesByUser(req, res) {
   try {
-    const resources = await resourcemodel
-      .find({ uploadedBy: req.user._id })
-      .populate("course");
+    const resources = await find({ uploadedBy: req.user._id }).populate(
+      "course",
+    );
     res
       .status(200)
       .json({ message: "Resources retrieved successfully", resources });
@@ -288,11 +287,11 @@ exports.getResourcesByUser = async (req, res) => {
       error: error.message,
     });
   }
-};
+}
 
-exports.downloadResource = async (req, res) => {
+export async function downloadResource(req, res) {
   try {
-    const resource = await resourcemodel.findByIdAndUpdate(
+    const resource = await findByIdAndUpdate(
       req.params.id,
       { $inc: { downloadCount: 1 } },
       { new: true },
@@ -301,7 +300,7 @@ exports.downloadResource = async (req, res) => {
       return res.status(404).json({ message: "Resource not found" });
     }
 
-    const url = cloudinary.utils.private_download_url(resource.publicId, "", {
+    const url = utils.private_download_url(resource.publicId, "", {
       resource_type: "raw",
       type: "upload",
       attachment: resource.fileName,
@@ -314,4 +313,4 @@ exports.downloadResource = async (req, res) => {
       .status(500)
       .json({ message: "Error downloading resource", error: error.message });
   }
-};
+}

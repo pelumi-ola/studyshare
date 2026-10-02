@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
-const reportModal = require("../models/Report");
+import { Types } from "mongoose";
+import { create, find, findById } from "../models/Report";
 
-exports.createReport = async (req, res) => {
+export async function createReport(req, res) {
   try {
     const { resource, reason, description } = req.body;
 
@@ -10,7 +10,7 @@ exports.createReport = async (req, res) => {
         .status(400)
         .json({ message: "Please fill in all required fields" });
     }
-    if (!mongoose.Types.ObjectId.isValid(resource)) {
+    if (!Types.ObjectId.isValid(resource)) {
       return res.status(400).json({ message: "Invalid resource ID" });
     }
     if (reason.trim() === "") {
@@ -20,7 +20,7 @@ exports.createReport = async (req, res) => {
       return res.status(400).json({ message: "Description cannot be empty" });
     }
 
-    const report = await reportModal.create({
+    const report = await create({
       resource,
       user: req.user._id,
       reason,
@@ -30,11 +30,11 @@ exports.createReport = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-};
+}
 
-exports.getAllReports = async (req, res) => {
+export async function getAllReports(req, res) {
   try {
-    const reports = await reportModal.find().populate("resource user");
+    const reports = await find().populate("resource user");
     if (!reports) {
       return res.status(404).json({ message: "No reports found" });
     }
@@ -45,13 +45,11 @@ exports.getAllReports = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-};
+}
 
-exports.getReportById = async (req, res) => {
+export async function getReportById(req, res) {
   try {
-    const report = await reportModal
-      .findById(req.params.id)
-      .populate("resource user");
+    const report = await findById(req.params.id).populate("resource user");
     if (!report) {
       return res.status(404).json({ message: "Report not found" });
     }
@@ -59,11 +57,11 @@ exports.getReportById = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-};
+}
 
-exports.updateReport = async (req, res) => {
+export async function updateReport(req, res) {
   try {
-    const report = await reportModal.findById(req.params.id);
+    const report = await findById(req.params.id);
 
     if (!report) {
       return res.status(404).json({
@@ -88,11 +86,11 @@ exports.updateReport = async (req, res) => {
       message: error.message,
     });
   }
-};
+}
 
-exports.deleteReport = async (req, res) => {
+export async function deleteReport(req, res) {
   try {
-    const report = await reportModal.findById(req.params.id);
+    const report = await findById(req.params.id);
     if (!report) {
       return res.status(404).json({ message: "Report not found" });
     }
@@ -101,4 +99,4 @@ exports.deleteReport = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-};
+}
