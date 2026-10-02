@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, asList } from "./api";
 
-// Loads resources + courses and makes sure every resource has a populated `course` object.
+// Loads resources + courses and makes sure every resource has a populated `course` object--.
 export function useCatalog() {
   const [state, setState] = useState({
     resources: [],
