@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "description": "Study Share is a Resources share management for students to download and share resources for studying",
   "author": "Esther-Ola",
-  "type": "commonjs",
+  "type": "module",
   "main": "server.js",
   "scripts": {
     "test": "vitest run",
     "dev": "nodemon server.js",
-    "start": "node --watch server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
