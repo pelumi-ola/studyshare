@@ -6,9 +6,7 @@
 **Project Type:** Cloud-Based Web Application
 **Project Name:** StudyShare
 **Document Status:** Final Research and System Architecture
-**Target Users:** University and College Students
-
----
+**Target Users:** University and College Student
 
 ## 1. Project Overview
 
@@ -29,8 +27,6 @@ The platform will support resources such as:
 * Academic reference documents
 
 The first version will focus on resource discovery and sharing rather than attempting to become a complete Learning Management System (LMS).
-
----
 
 # 2. Real-World Problem Identification
 
