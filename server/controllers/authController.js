@@ -1,8 +1,8 @@
-const userModel = require("../models/User");
-const bcrypt = require("bcryptjs");
-const generateToken = require("../utils/generateToken");
+import userModel, { findOne, findById } from "../models/User";
+import { hash, compare } from "bcryptjs";
+import generateToken from "../utils/generateToken";
 
-exports.registerUser = async (req, res) => {
+export async function registerUser(req, res) {
   try {
     const { name, email, password, department, level } = req.body;
     if (!name || !email || !password) {
@@ -10,11 +10,11 @@ exports.registerUser = async (req, res) => {
         .status(400)
         .json({ message: "Please fill in all required fields" });
     }
-    const existingUser = await userModel.findOne({ email });
+    const existingUser = await findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hash(password, 10);
 
     const newUser = new userModel({
       name,
@@ -42,9 +42,9 @@ exports.registerUser = async (req, res) => {
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }
-};
+}
 
-exports.loginUser = async (req, res) => {
+export async function loginUser(req, res) {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -52,11 +52,11 @@ exports.loginUser = async (req, res) => {
         .status(400)
         .json({ message: "Please fill in all required fields" });
     }
-    const user = await userModel.findOne({ email });
+    const user = await findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -78,11 +78,11 @@ exports.loginUser = async (req, res) => {
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }
-};
+}
 
-exports.getUserProfile = async (req, res) => {
+export async function getUserProfile(req, res) {
   try {
-    const user = await userModel.findById(req.user._id).select("-password");
+    const user = await findById(req.user._id).select("-password");
     if (!user) {
       return res
         .status(404)
@@ -95,4 +95,4 @@ exports.getUserProfile = async (req, res) => {
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }
-};
+}

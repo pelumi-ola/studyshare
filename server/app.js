@@ -1,13 +1,13 @@
-const express = require("express");
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
+import express, { json, urlencoded } from "express";
+import cookieParser from "cookie-parser";
+import cors from "cors";
 
-const authRoutes = require("./routes/authRoutes");
-const resourceRoutes = require("./routes/resourceRoute");
-const courseRoutes = require("./routes/courseRoutes");
-const adminRoutes = require("./routes/adminRoutes");
-const reportRoutes = require("./routes/reportRoutes");
-const errorHandler = require("./middleware/errorMiddleware");
+import authRoutes from "./routes/authRoutes";
+import resourceRoutes from "./routes/resourceRoute";
+import courseRoutes from "./routes/courseRoutes";
+import adminRoutes from "./routes/adminRoutes";
+import reportRoutes from "./routes/reportRoutes";
+import errorHandler from "./middleware/errorMiddleware";
 
 const app = express();
 
@@ -19,8 +19,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(json());
+app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
@@ -37,4 +37,4 @@ app.use("/api/v1/reports", reportRoutes);
 
 app.use(errorHandler);
 
-module.exports = app;
+export default app;

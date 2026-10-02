@@ -43,7 +43,9 @@ export default function ResourceDetail() {
     }
   };
   useEffect(() => {
-    load(); /* eslint-disable-next-line */
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   if (err) return <Empty title="Resource not found">{err}</Empty>;

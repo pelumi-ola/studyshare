@@ -1,18 +1,18 @@
-const { isAdmin } = require("../middleware/adminMiddleware");
-const {
+import { isAdmin } from "../middleware/adminMiddleware";
+import {
   registerAdmin,
   loginAdmin,
   getAllUsers,
   deleteUser,
-} = require("../controllers/adminController");
-const { protect } = require("../middleware/authMiddleware");
+} from "../controllers/adminController";
+import { protect } from "../middleware/authMiddleware";
 
-const express = require("express");
-const router = express.Router();
+import { Router } from "express";
+const router = Router();
 
 router.post("/register", registerAdmin);
 router.post("/login", loginAdmin);
 router.get("/users", protect, isAdmin, getAllUsers);
 router.delete("/users/:id", protect, isAdmin, deleteUser);
 
-module.exports = router;
+export default router;

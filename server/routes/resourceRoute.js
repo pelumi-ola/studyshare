@@ -1,21 +1,21 @@
-const express = require("express");
-const router = express.Router();
-const {
+import { Router } from "express";
+const router = Router();
+import {
   getAllResources,
   getResourceById,
   createResource,
   updateResource,
   deleteResource,
   downloadResource,
-} = require("../controllers/resourceController");
-const { protect } = require("../middleware/authMiddleware");
-const upload = require("../middleware/uploadMiddleware");
+} from "../controllers/resourceController";
+import { protect } from "../middleware/authMiddleware";
+import { single } from "../middleware/uploadMiddleware";
 
-router.post("/", protect, upload.single("file"), createResource);
+router.post("/", protect, single("file"), createResource);
 router.get("/", protect, getAllResources);
 router.get("/:id", protect, getResourceById);
 router.put("/:id", protect, updateResource);
 router.delete("/:id", protect, deleteResource);
 router.get("/:id/download", protect, downloadResource);
 
-module.exports = router;
+export default router;

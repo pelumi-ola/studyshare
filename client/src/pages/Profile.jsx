@@ -6,6 +6,7 @@ import { Badge, Button, PageHead } from "../components/ui";
 
 export default function Profile() {
   const { user, refresh, logout } = useAuth();
+  // eslint-disable-next-line no-unused-vars
   const [fresh, setFresh] = useState(false);
   useEffect(() => {
     refresh().finally(() => setFresh(true)); /* eslint-disable-next-line */

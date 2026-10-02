@@ -1,6 +1,12 @@
-const courseModel = require("../models/Course");
+import {
+  findOne,
+  create,
+  find,
+  findById,
+  findByIdAndUpdate,
+} from "../models/Course";
 
-exports.createCourse = async (req, res) => {
+export async function createCourse(req, res) {
   try {
     const { courseCode, courseTitle, department, level } = req.body;
 
@@ -10,7 +16,7 @@ exports.createCourse = async (req, res) => {
       });
     }
 
-    const existingCourse = await courseModel.findOne({
+    const existingCourse = await findOne({
       courseCode: courseCode.toUpperCase(),
     });
 
@@ -20,7 +26,7 @@ exports.createCourse = async (req, res) => {
       });
     }
 
-    const course = await courseModel.create({
+    const course = await create({
       courseCode,
       courseTitle,
       department,
@@ -39,11 +45,11 @@ exports.createCourse = async (req, res) => {
       error: error.message,
     });
   }
-};
+}
 
-exports.getAllCourses = async (req, res) => {
+export async function getAllCourses(req, res) {
   try {
-    const courses = await courseModel.find().sort({
+    const courses = await find().sort({
       courseCode: 1,
     });
 
@@ -59,11 +65,11 @@ exports.getAllCourses = async (req, res) => {
       error: error.message,
     });
   }
-};
+}
 
-exports.getCourseById = async (req, res) => {
+export async function getCourseById(req, res) {
   try {
-    const course = await courseModel.findById(req.params.id);
+    const course = await findById(req.params.id);
 
     if (!course) {
       return res.status(404).json({
@@ -83,12 +89,12 @@ exports.getCourseById = async (req, res) => {
       error: error.message,
     });
   }
-};
+}
 
-exports.updateCourse = async (req, res) => {
+export async function updateCourse(req, res) {
   try {
     const { courseCode, courseTitle, department, level } = req.body;
-    const course = await courseModel.findById(req.params.id);
+    const course = await findById(req.params.id);
 
     if (!course) {
       return res.status(404).json({
@@ -96,7 +102,7 @@ exports.updateCourse = async (req, res) => {
       });
     }
 
-    const updatedCourse = await courseModel.findByIdAndUpdate(
+    const updatedCourse = await findByIdAndUpdate(
       req.params.id,
       {
         courseCode,
@@ -119,11 +125,11 @@ exports.updateCourse = async (req, res) => {
       error: error.message,
     });
   }
-};
+}
 
-exports.deleteCourse = async (req, res) => {
+export async function deleteCourse(req, res) {
   try {
-    const course = await courseModel.findById(req.params.id);
+    const course = await findById(req.params.id);
     if (!course) {
       return res.status(404).json({
         message: "Course not found",
@@ -140,4 +146,4 @@ exports.deleteCourse = async (req, res) => {
       error: error.message,
     });
   }
-};
+}

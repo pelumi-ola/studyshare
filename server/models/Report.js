@@ -1,14 +1,14 @@
-const mongoose = require("mongoose");
+import { Schema, model } from "mongoose";
 
-const reportSchema = new mongoose.Schema(
+const reportSchema = new Schema(
   {
     resource: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Resource",
       required: true,
     },
     user: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -40,4 +40,4 @@ const reportSchema = new mongoose.Schema(
   },
 );
 
-module.exports = mongoose.model("Report", reportSchema);
+export default model("Report", reportSchema);

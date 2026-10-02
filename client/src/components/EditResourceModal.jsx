@@ -16,6 +16,7 @@ export default function EditResourceModal({
 
   useEffect(() => {
     if (!open || !resource) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setF({
       title: resource.title,
       description: resource.description,
