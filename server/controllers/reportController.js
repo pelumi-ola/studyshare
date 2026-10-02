@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { create, find, findById } from "../models/Report.js";
+import reportModel from "../models/Report.js";
 
 export async function createReport(req, res) {
   try {
@@ -20,7 +20,7 @@ export async function createReport(req, res) {
       return res.status(400).json({ message: "Description cannot be empty" });
     }
 
-    const report = await create({
+    const report = await reportModel.create({
       resource,
       user: req.user._id,
       reason,
@@ -34,7 +34,7 @@ export async function createReport(req, res) {
 
 export async function getAllReports(req, res) {
   try {
-    const reports = await find().populate("resource user");
+    const reports = await reportModel.find().populate("resource user");
     if (!reports) {
       return res.status(404).json({ message: "No reports found" });
     }
@@ -49,7 +49,9 @@ export async function getAllReports(req, res) {
 
 export async function getReportById(req, res) {
   try {
-    const report = await findById(req.params.id).populate("resource user");
+    const report = await reportModel
+      .findById(req.params.id)
+      .populate("resource user");
     if (!report) {
       return res.status(404).json({ message: "Report not found" });
     }
@@ -61,7 +63,7 @@ export async function getReportById(req, res) {
 
 export async function updateReport(req, res) {
   try {
-    const report = await findById(req.params.id);
+    const report = await reportModel.findById(req.params.id);
 
     if (!report) {
       return res.status(404).json({
@@ -90,7 +92,7 @@ export async function updateReport(req, res) {
 
 export async function deleteReport(req, res) {
   try {
-    const report = await findById(req.params.id);
+    const report = await reportModel.findById(req.params.id);
     if (!report) {
       return res.status(404).json({ message: "Report not found" });
     }

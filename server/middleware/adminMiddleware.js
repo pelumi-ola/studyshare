@@ -1,8 +1,8 @@
-import { findById } from "../models/User.js";
+import userModel from "../models/User.js";
 
 const isAdmin = async (req, res, next) => {
   try {
-    const admin = await findById(req.user.id);
+    const admin = await userModel.findById(req.user.id);
     if (!admin || admin.role !== "admin") {
       return res.status(403).json({ message: "Access denied. Admin only." });
     }
@@ -12,4 +12,4 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
-export default { isAdmin };
+export { isAdmin };

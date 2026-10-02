@@ -1,10 +1,5 @@
-import usermodel, {
-  findOne,
-  find,
-  findById,
-  findByIdAndDelete,
-} from "../models/User.js";
-import { hash, compare } from "bcryptjs";
+import usermodel from "../models/User.js";
+import bcrypt from "bcryptjs";
 import generateToken from "../utils/generateToken.js";
 
 export async function registerAdmin(req, res) {
@@ -16,11 +11,11 @@ export async function registerAdmin(req, res) {
         .status(400)
         .json({ message: "Please fill in all required fields" });
     }
-    const existingUser = await findOne({ email });
+    const existingUser = await usermodel.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
-    const hashedPassword = await hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const admin = new usermodel({
       name,
@@ -50,11 +45,11 @@ export async function registerAdmin(req, res) {
 export async function loginAdmin(req, res) {
   try {
     const { email, password } = req.body;
-    const admin = await findOne({ email, role: "admin" });
+    const admin = await usermodel.findOne({ email, role: "admin" });
     if (!admin) {
       return res.status(404).json({ message: "Admin not found" });
     }
-    const isMatch = await compare(password, admin.password);
+    const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -70,7 +65,7 @@ export async function loginAdmin(req, res) {
 
 export async function getAllUsers(req, res) {
   try {
-    const users = await find().select("-password");
+    const users = await usermodel.find().select("-password");
     if (!users) {
       return res.status(404).json({ message: "No users found" });
     }
@@ -88,11 +83,11 @@ export async function getAllUsers(req, res) {
 
 export async function deleteUser(req, res) {
   try {
-    const user = await findById(req.params.id);
+    const user = await usermodel.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    await findByIdAndDelete(req.params.id);
+    await usermodel.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     console.error("DELETEUSER ERROR:", error);

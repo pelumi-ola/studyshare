@@ -1,10 +1,4 @@
-import {
-  findOne,
-  create,
-  find,
-  findById,
-  findByIdAndUpdate,
-} from "../models/Course.js";
+import courseModel from "../models/Course.js";
 
 export async function createCourse(req, res) {
   try {
@@ -16,7 +10,7 @@ export async function createCourse(req, res) {
       });
     }
 
-    const existingCourse = await findOne({
+    const existingCourse = await courseModel.findOne({
       courseCode: courseCode.toUpperCase(),
     });
 
@@ -26,7 +20,7 @@ export async function createCourse(req, res) {
       });
     }
 
-    const course = await create({
+    const course = await courseModel.create({
       courseCode,
       courseTitle,
       department,
@@ -49,7 +43,7 @@ export async function createCourse(req, res) {
 
 export async function getAllCourses(req, res) {
   try {
-    const courses = await find().sort({
+    const courses = await courseModel.find().sort({
       courseCode: 1,
     });
 
@@ -69,7 +63,7 @@ export async function getAllCourses(req, res) {
 
 export async function getCourseById(req, res) {
   try {
-    const course = await findById(req.params.id);
+    const course = await courseModel.findById(req.params.id);
 
     if (!course) {
       return res.status(404).json({
@@ -94,7 +88,7 @@ export async function getCourseById(req, res) {
 export async function updateCourse(req, res) {
   try {
     const { courseCode, courseTitle, department, level } = req.body;
-    const course = await findById(req.params.id);
+    const course = await courseModel.findById(req.params.id);
 
     if (!course) {
       return res.status(404).json({
@@ -102,7 +96,7 @@ export async function updateCourse(req, res) {
       });
     }
 
-    const updatedCourse = await findByIdAndUpdate(
+    const updatedCourse = await courseModel.findByIdAndUpdate(
       req.params.id,
       {
         courseCode,
@@ -129,7 +123,7 @@ export async function updateCourse(req, res) {
 
 export async function deleteCourse(req, res) {
   try {
-    const course = await findById(req.params.id);
+    const course = await courseModel.findById(req.params.id);
     if (!course) {
       return res.status(404).json({
         message: "Course not found",

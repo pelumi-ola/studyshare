@@ -1,12 +1,6 @@
-import {
-  create,
-  find,
-  countDocuments,
-  findById,
-  findByIdAndUpdate,
-} from "../models/Resource.js";
-import { findById as _findById } from "../models/Course.js";
-import { uploader, utils } from "../config/cloudinary.js";
+import resourceModel from "../models/Resource.js";
+import courseModel from "../models/Course.js";
+import cloudinary from "../config/cloudinary.js";
 import { unlinkSync, existsSync } from "fs";
 
 export async function createResource(req, res) {
@@ -36,7 +30,7 @@ export async function createResource(req, res) {
       });
     }
 
-    const existingCourse = await _findById(course);
+    const existingCourse = await courseModel._findById(course);
 
     if (!existingCourse) {
       return res.status(404).json({
@@ -52,13 +46,13 @@ export async function createResource(req, res) {
     }
 
     // Upload file to Cloudinary
-    const result = await uploader.upload(req.file.path, {
+    const result = await cloudinary.uploader.upload(req.file.path, {
       folder: "studyshare/resources",
       resource_type: "raw",
     });
 
     // Create resource in MongoDB
-    const resource = await create({
+    const resource = await resourceModel.create({
       title,
       description,
       course,
@@ -114,7 +108,7 @@ export async function getAllResources(req, res) {
 
     // Filter by course
     if (courseId) {
-      const course = await _findById(courseId);
+      const course = await resourceModel._findById(courseId);
 
       if (!course) {
         return res.status(404).json({
@@ -130,7 +124,8 @@ export async function getAllResources(req, res) {
     const limitNumber = Math.min(Math.max(Number(limit), 1), 50);
     const skip = (pageNumber - 1) * limitNumber;
 
-    const resources = await find(filter)
+    const resources = await resourceModel
+      .find(filter)
       .populate("course")
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -164,7 +159,9 @@ export async function getAllResources(req, res) {
 
 export async function getResourceById(req, res) {
   try {
-    const resource = await findById(req.params.id).populate("course");
+    const resource = await resourceModel
+      .findById(req.params.id)
+      .populate("course");
     if (!resource) {
       return res.status(404).json({ message: "Resource not found" });
     }
@@ -183,7 +180,9 @@ export async function getResourceById(req, res) {
 
 export async function deleteResource(req, res) {
   try {
-    const resource = await findById(req.params.id).populate("course");
+    const resource = await resourceModel
+      .findById(req.params.id)
+      .populate("course");
     if (!resource) {
       return res.status(404).json({ message: "Resource not found" });
     }
@@ -193,7 +192,7 @@ export async function deleteResource(req, res) {
         .status(403)
         .json({ message: "You are not allowed to delete this resource" });
     }
-    await uploader.destroy(resource.publicId, {
+    await cloudinary.uploader.destroy(resource.publicId, {
       resource_type: "raw",
     });
 
@@ -212,7 +211,7 @@ export async function deleteResource(req, res) {
 
 export async function updateResource(req, res) {
   try {
-    const resource = await findById(req.params.id);
+    const resource = await resourceModel.findById(req.params.id);
     if (!resource) {
       return res.status(404).json({ message: "Resource not found" });
     }
@@ -223,7 +222,7 @@ export async function updateResource(req, res) {
     }
     const { title, description, course, resourceType } = req.body;
     if (course) {
-      const existingCourse = await _findById(course);
+      const existingCourse = await resourceModel_findById(course);
 
       if (!existingCourse) {
         return res.status(404).json({
@@ -255,7 +254,7 @@ export async function updateResource(req, res) {
 export async function getResourcesByCourse(req, res) {
   try {
     const { courseId } = req.params;
-    const course = await _findById(courseId);
+    const course = await resourceModel._findById(courseId);
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
@@ -274,9 +273,9 @@ export async function getResourcesByCourse(req, res) {
 
 export async function getResourcesByUser(req, res) {
   try {
-    const resources = await find({ uploadedBy: req.user._id }).populate(
-      "course",
-    );
+    const resources = await resourceModel
+      .find({ uploadedBy: req.user._id })
+      .populate("course");
     res
       .status(200)
       .json({ message: "Resources retrieved successfully", resources });
@@ -291,7 +290,7 @@ export async function getResourcesByUser(req, res) {
 
 export async function downloadResource(req, res) {
   try {
-    const resource = await findByIdAndUpdate(
+    const resource = await resourceModel.findByIdAndUpdate(
       req.params.id,
       { $inc: { downloadCount: 1 } },
       { new: true },
@@ -300,7 +299,7 @@ export async function downloadResource(req, res) {
       return res.status(404).json({ message: "Resource not found" });
     }
 
-    const url = utils.private_download_url(resource.publicId, "", {
+    const url = cloudinary.utils.private_download_url(resource.publicId, "", {
       resource_type: "raw",
       type: "upload",
       attachment: resource.fileName,

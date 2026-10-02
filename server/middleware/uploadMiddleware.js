@@ -1,6 +1,10 @@
 import multer, { diskStorage } from "multer";
-import { join, extname } from "path";
+import { join, dirname, extname } from "path";
 import { mkdirSync } from "fs";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const uploadDir = join(__dirname, "..", "uploads");
 mkdirSync(uploadDir, { recursive: true });

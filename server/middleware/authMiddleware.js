@@ -1,6 +1,6 @@
-import { verify } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
-import { findById } from "../models/User.js";
+import userModel from "../models/User.js";
 
 // Middleware to protect routes
 const protect = asyncHandler(async (req, res, next) => {
@@ -12,8 +12,8 @@ const protect = asyncHandler(async (req, res, next) => {
   ) {
     try {
       token = req.headers.authorization.split(" ")[1];
-      const decoded = verify(token, process.env.JWT_SECRET);
-      req.user = await findById(decoded.userId).select("-password");
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = await userModel.findById(decoded.userId).select("-password");
       next();
     } catch (error) {
       res.status(401).json({ message: "Not authorized, token failed" });
@@ -25,4 +25,4 @@ const protect = asyncHandler(async (req, res, next) => {
   }
 });
 
-export default { protect };
+export { protect };
