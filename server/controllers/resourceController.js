@@ -222,7 +222,7 @@ export async function updateResource(req, res) {
     }
     const { title, description, course, resourceType } = req.body;
     if (course) {
-      const existingCourse = await resourceModel_findById(course);
+      const existingCourse = await resourceModel.findById(course);
 
       if (!existingCourse) {
         return res.status(404).json({
