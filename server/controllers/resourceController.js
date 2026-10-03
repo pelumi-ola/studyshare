@@ -108,7 +108,7 @@ export async function getAllResources(req, res) {
 
     // Filter by course
     if (courseId) {
-      const course = await resourceModel.findById(courseId);
+      const course = await courseModel.findById(courseId);
 
       if (!course) {
         return res.status(404).json({
@@ -222,7 +222,7 @@ export async function updateResource(req, res) {
     }
     const { title, description, course, resourceType } = req.body;
     if (course) {
-      const existingCourse = await resourceModel.findById(course);
+      const existingCourse = await courseModel.findById(course);
 
       if (!existingCourse) {
         return res.status(404).json({
@@ -254,7 +254,7 @@ export async function updateResource(req, res) {
 export async function getResourcesByCourse(req, res) {
   try {
     const { courseId } = req.params;
-    const course = await resourceModel.findById(courseId);
+    const course = await courseModel.findById(courseId);
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
