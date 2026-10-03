@@ -30,7 +30,7 @@ export async function createResource(req, res) {
       });
     }
 
-    const existingCourse = await courseModel._findById(course);
+    const existingCourse = await courseModel.findById(course);
 
     if (!existingCourse) {
       return res.status(404).json({
@@ -108,7 +108,7 @@ export async function getAllResources(req, res) {
 
     // Filter by course
     if (courseId) {
-      const course = await resourceModel._findById(courseId);
+      const course = await resourceModel.findById(courseId);
 
       if (!course) {
         return res.status(404).json({
@@ -131,7 +131,7 @@ export async function getAllResources(req, res) {
       .skip(skip)
       .limit(limitNumber);
 
-    const totalResources = await countDocuments(filter);
+    const totalResources = await resourceModel.countDocuments(filter);
 
     const totalPages = Math.ceil(totalResources / limitNumber);
 
@@ -254,11 +254,13 @@ export async function updateResource(req, res) {
 export async function getResourcesByCourse(req, res) {
   try {
     const { courseId } = req.params;
-    const course = await resourceModel._findById(courseId);
+    const course = await resourceModel.findById(courseId);
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
-    const resources = await find({ course: courseId }).populate("course");
+    const resources = await resourceModel
+      .find({ course: courseId })
+      .populate("course");
     res
       .status(200)
       .json({ message: "Resources retrieved successfully", resources });
